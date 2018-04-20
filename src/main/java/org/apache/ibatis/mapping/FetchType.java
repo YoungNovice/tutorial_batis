@@ -15,9 +15,17 @@
  */
 package org.apache.ibatis.mapping;
 
+import org.apache.ibatis.annotations.HaveRead;
+
 /**
  * @author Eduardo Macarron
  */
+@HaveRead
 public enum FetchType {
+  /* sourceRead
+   * 延迟加载枚举
+   * LAZY 懒加载
+   * EAGER 非懒加载
+   */
   LAZY, EAGER, DEFAULT
 }
