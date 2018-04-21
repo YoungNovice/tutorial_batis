@@ -16,6 +16,7 @@
 package org.apache.ibatis.binding;
 
 import org.apache.ibatis.annotations.Flush;
+import org.apache.ibatis.annotations.HaveRead;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -49,8 +50,12 @@ public class MapperMethod {
     this.method = new MethodSignature(config, mapperInterface, method);
   }
 
+  @HaveRead
   public Object execute(SqlSession sqlSession, Object[] args) {
     Object result;
+    /* sourceRead
+     * 判断Mapper的类型
+     */
     switch (command.getType()) {
       case INSERT: {
     	Object param = method.convertArgsToSqlCommandParam(args);
@@ -72,6 +77,9 @@ public class MapperMethod {
           executeWithResultHandler(sqlSession, args);
           result = null;
         } else if (method.returnsMany()) {
+          /* sourceRead
+           * 返回List结果
+           */
           result = executeForMany(sqlSession, args);
         } else if (method.returnsMap()) {
           result = executeForMap(sqlSession, args);
@@ -127,11 +135,19 @@ public class MapperMethod {
     }
   }
 
+  @HaveRead
   private <E> Object executeForMany(SqlSession sqlSession, Object[] args) {
+    /* sourceRead
+     * 可以看出它实际上是调用了mybatis 之前的老接口
+     * selectList
+     */
     List<E> result;
     Object param = method.convertArgsToSqlCommandParam(args);
     if (method.hasRowBounds()) {
       RowBounds rowBounds = method.extractRowBounds(args);
+      /* sourceRead
+       * 通过sqlSession 调用selectList方法
+       */
       result = sqlSession.<E>selectList(command.getName(), param, rowBounds);
     } else {
       result = sqlSession.<E>selectList(command.getName(), param);

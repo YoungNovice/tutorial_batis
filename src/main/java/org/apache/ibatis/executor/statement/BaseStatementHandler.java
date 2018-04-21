@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.ibatis.annotations.HaveRead;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.ExecutorException;
@@ -80,13 +81,18 @@ public abstract class BaseStatementHandler implements StatementHandler {
     return parameterHandler;
   }
 
+  @HaveRead
   @Override
   public Statement prepare(Connection connection, Integer transactionTimeout) throws SQLException {
     ErrorContext.instance().sql(boundSql.getSql());
     Statement statement = null;
     try {
+      /* sourceRead
+       * 对象方法预编译
+       */
       statement = instantiateStatement(connection);
       setStatementTimeout(statement, transactionTimeout);
+
       setFetchSize(statement);
       return statement;
     } catch (SQLException e) {

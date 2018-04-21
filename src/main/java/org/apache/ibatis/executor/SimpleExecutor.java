@@ -15,6 +15,7 @@
  */
 package org.apache.ibatis.executor;
 
+import org.apache.ibatis.annotations.HaveRead;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.logging.Log;
@@ -58,6 +59,11 @@ public class SimpleExecutor extends BaseExecutor {
     Statement stmt = null;
     try {
       Configuration configuration = ms.getConfiguration();
+      /* sourceRead
+       * 通过configuration 获取StatemnetHandler
+       * 调用prepareStatement 方法对sql编译和参数初始化
+       *
+       */
       StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
       stmt = prepareStatement(handler, ms.getStatementLog());
       return handler.<E>query(stmt, resultHandler);
@@ -79,10 +85,17 @@ public class SimpleExecutor extends BaseExecutor {
     return Collections.emptyList();
   }
 
+  @HaveRead
   private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
     Statement stmt;
     Connection connection = getConnection(statementLog);
+    /* sourceRead
+     * 调用StatementHandler 的prepare 预编译
+     */
     stmt = handler.prepare(connection, transaction.getTimeout());
+    /* sourceRead
+     * parameterized 设置参数
+     */
     handler.parameterize(stmt);
     return stmt;
   }

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.ibatis.annotations.HaveRead;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.builder.CacheRefResolver;
 import org.apache.ibatis.builder.ResultMapResolver;
@@ -526,30 +527,46 @@ public class Configuration {
     return resultSetHandler;
   }
 
+  @HaveRead
   public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
+    /* sourceRead
+     * 创建statementHandler
+     * 注册组件
+     */
     statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
     return statementHandler;
   }
 
+  @HaveRead
   public Executor newExecutor(Transaction transaction) {
     return newExecutor(transaction, defaultExecutorType);
   }
 
+  @HaveRead
   public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
     executorType = executorType == null ? defaultExecutorType : executorType;
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
     Executor executor;
+    /* sourceRead
+     * 可以看出系统有多种执行器， 会根据配置文件生成一个执行器
+     */
     if (ExecutorType.BATCH == executorType) {
       executor = new BatchExecutor(this, transaction);
     } else if (ExecutorType.REUSE == executorType) {
       executor = new ReuseExecutor(this, transaction);
     } else {
+      /* sourceRead
+       * SimpleExecute 的业务
+       */
       executor = new SimpleExecutor(this, transaction);
     }
     if (cacheEnabled) {
       executor = new CachingExecutor(executor);
     }
+    /* sourceRead
+     * 注册插件
+     */
     executor = (Executor) interceptorChain.pluginAll(executor);
     return executor;
   }
@@ -713,7 +730,11 @@ public class Configuration {
     mapperRegistry.addMapper(type);
   }
 
+  @HaveRead
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+    /* sourceRead
+     * 在configuragtion中 调用了mapperRegistry 的getMapper方法
+     */
     return mapperRegistry.getMapper(type, sqlSession);
   }
 

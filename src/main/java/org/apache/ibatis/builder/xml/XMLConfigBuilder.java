@@ -20,6 +20,7 @@ import java.io.Reader;
 import java.util.Properties;
 import javax.sql.DataSource;
 
+import org.apache.ibatis.annotations.HaveRead;
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.datasource.DataSourceFactory;
@@ -90,17 +91,25 @@ public class XMLConfigBuilder extends BaseBuilder {
     this.parser = parser;
   }
 
+  @HaveRead
   public Configuration parse() {
     if (parsed) {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
     }
     parsed = true;
+    /* sourceRead
+     * 交给parseConfiguration 处理
+     */
     parseConfiguration(parser.evalNode("/configuration"));
     return configuration;
   }
 
+  @HaveRead
   private void parseConfiguration(XNode root) {
     try {
+      /* sourceRead
+       * 这里可以看到读取节点xml 的信息一目了然
+       */
       Properties settings = settingsAsPropertiess(root.evalNode("settings"));
       //issue #117 read properties first
       propertiesElement(root.evalNode("properties"));
@@ -114,6 +123,9 @@ public class XMLConfigBuilder extends BaseBuilder {
       // read it after objectFactory and objectWrapperFactory issue #631
       environmentsElement(root.evalNode("environments"));
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
+      /* sourceRead
+       * 解析typeHandlerElement
+       */
       typeHandlerElement(root.evalNode("typeHandlers"));
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
@@ -324,7 +336,13 @@ public class XMLConfigBuilder extends BaseBuilder {
     throw new BuilderException("Environment declaration requires a DataSourceFactory.");
   }
 
+  @HaveRead
   private void typeHandlerElement(XNode parent) throws Exception {
+    /* sourceRead
+     * 解析typeHandler 节点信息 并将节点信息放到typeHandlerRegistryz中去
+     *
+     * typeHandlerResistry 定义在父类中
+     */
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
         if ("package".equals(child.getName())) {

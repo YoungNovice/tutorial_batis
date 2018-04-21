@@ -20,6 +20,7 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.ibatis.annotations.HaveRead;
 import org.apache.ibatis.session.SqlSession;
 
 /**
@@ -42,11 +43,18 @@ public class MapperProxyFactory<T> {
     return methodCache;
   }
 
+  @HaveRead
   @SuppressWarnings("unchecked")
   protected T newInstance(MapperProxy<T> mapperProxy) {
+    /* sourceRead
+     * 使用JDK 代理接口生成接口实现类的对象
+     * 真正的业务逻辑封装在InvocationHandler 的invoke 方法中
+     * 那就去mapperProxy里面找被
+     */
     return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] { mapperInterface }, mapperProxy);
   }
 
+  @HaveRead
   public T newInstance(SqlSession sqlSession) {
     final MapperProxy<T> mapperProxy = new MapperProxy<T>(sqlSession, mapperInterface, methodCache);
     return newInstance(mapperProxy);

@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.HaveRead;
 import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.session.SqlSession;
 
@@ -40,6 +41,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     this.methodCache = methodCache;
   }
 
+  @HaveRead
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     if (Object.class.equals(method.getDeclaringClass())) {
@@ -50,6 +52,9 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
       }
     }
     final MapperMethod mapperMethod = cachedMapperMethod(method);
+    /* sourceRead
+     * 执行mapperMethod的execute方法
+     */
     return mapperMethod.execute(sqlSession, args);
   }
 

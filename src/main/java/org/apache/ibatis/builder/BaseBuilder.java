@@ -37,6 +37,10 @@ public abstract class BaseBuilder {
   protected final TypeHandlerRegistry typeHandlerRegistry;
 
   public BaseBuilder(Configuration configuration) {
+    /* sourceRead
+     * typeAliasRegistry 和 typeHandlerRegistry 都是从configuration
+     * 中拿到的
+     */
     this.configuration = configuration;
     this.typeAliasRegistry = this.configuration.getTypeAliasRegistry();
     this.typeHandlerRegistry = this.configuration.getTypeHandlerRegistry();

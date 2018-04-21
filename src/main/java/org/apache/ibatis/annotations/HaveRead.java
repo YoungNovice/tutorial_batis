@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
  * @author xuanyang 读过的用它标记
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface HaveRead {}

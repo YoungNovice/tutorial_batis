@@ -15,6 +15,7 @@
  */
 package org.apache.ibatis.binding;
 
+import org.apache.ibatis.annotations.HaveRead;
 import org.apache.ibatis.builder.annotation.MapperAnnotationBuilder;
 import org.apache.ibatis.io.ResolverUtil;
 import org.apache.ibatis.session.Configuration;
@@ -40,13 +41,20 @@ public class MapperRegistry {
     this.config = config;
   }
 
+  @HaveRead
   @SuppressWarnings("unchecked")
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+    /* sourceRead
+     * Mapper真实实现
+     */
     final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
     if (mapperProxyFactory == null) {
       throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
     }
     try {
+      /* sourceRead
+       * 用mapperProxyFactory 生成代理对象
+       */
       return mapperProxyFactory.newInstance(sqlSession);
     } catch (Exception e) {
       throw new BindingException("Error getting mapper instance. Cause: " + e, e);

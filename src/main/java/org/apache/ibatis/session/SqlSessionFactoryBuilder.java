@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Properties;
 
+import org.apache.ibatis.annotations.HaveRead;
 import org.apache.ibatis.builder.xml.XMLConfigBuilder;
 import org.apache.ibatis.exceptions.ExceptionFactory;
 import org.apache.ibatis.executor.ErrorContext;
@@ -60,7 +61,11 @@ public class SqlSessionFactoryBuilder {
     }
   }
 
+  @HaveRead
   public SqlSessionFactory build(InputStream inputStream) {
+    /* sourceRead
+     * 入口需要配置文件的InputStream 流 交给重载方法处理
+     */
     return build(inputStream, null, null);
   }
 
@@ -72,9 +77,16 @@ public class SqlSessionFactoryBuilder {
     return build(inputStream, null, properties);
   }
 
+  @HaveRead
   public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
     try {
+      /* sourceRead
+       * 解析xml生成Configuration 对象
+       */
       XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
+      /* sourceRead
+       * 调用重载的builid（Configuration config）生成SessionFactory对象
+       */
       return build(parser.parse());
     } catch (Exception e) {
       throw ExceptionFactory.wrapException("Error building SqlSession.", e);

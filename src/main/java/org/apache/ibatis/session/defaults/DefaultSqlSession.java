@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.HaveRead;
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.exceptions.ExceptionFactory;
@@ -141,10 +142,14 @@ public class DefaultSqlSession implements SqlSession {
     return this.selectList(statement, parameter, RowBounds.DEFAULT);
   }
 
+  @HaveRead
   @Override
   public <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds) {
     try {
       MappedStatement ms = configuration.getMappedStatement(statement);
+      /* sourceRead
+       * sqlSession 都是将工作交给executor去执行的
+       */
       return executor.query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);
     } catch (Exception e) {
       throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);
@@ -287,8 +292,13 @@ public class DefaultSqlSession implements SqlSession {
     return configuration;
   }
 
+  @HaveRead
   @Override
   public <T> T getMapper(Class<T> type) {
+    /* sourceRead
+     * getMapper核心方法 它实际上调用的是configuration 的
+     * 方法
+     */
     return configuration.<T>getMapper(type, this);
   }
 
