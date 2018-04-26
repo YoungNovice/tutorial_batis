@@ -565,7 +565,7 @@ public class Configuration {
       executor = new CachingExecutor(executor);
     }
     /* sourceRead
-     * 注册插件
+     * 生成代理对象
      */
     executor = (Executor) interceptorChain.pluginAll(executor);
     return executor;

@@ -40,7 +40,15 @@ public class Plugin implements InvocationHandler {
     this.signatureMap = signatureMap;
   }
 
+  /**
+   * wrap 方法生成代理对象
+   *
+   * @param target 被代理的对象
+   * @param interceptor 拦截器
+   * @return 真实对象
+   */
   public static Object wrap(Object target, Interceptor interceptor) {
+    // key 是四大对象的某个class value 是拦截的方法对象
     Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
     Class<?> type = target.getClass();
     Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
@@ -53,6 +61,15 @@ public class Plugin implements InvocationHandler {
     return target;
   }
 
+  /**
+   * 封装代理业务逻辑
+   *
+   * @param proxy 代理对象
+   * @param method 被代理的方法
+   * @param args 方法的参数
+   * @return 调用方法的返回值
+   * @throws Throwable Throwable
+   */
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
@@ -72,6 +89,7 @@ public class Plugin implements InvocationHandler {
     if (interceptsAnnotation == null) {
       throw new PluginException("No @Intercepts annotation was found in interceptor " + interceptor.getClass().getName());      
     }
+    // 获取Signature的数组 遍历它
     Signature[] sigs = interceptsAnnotation.value();
     Map<Class<?>, Set<Method>> signatureMap = new HashMap<Class<?>, Set<Method>>();
     for (Signature sig : sigs) {

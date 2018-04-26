@@ -186,6 +186,9 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 
+  /* sourceRead
+   * 读取xml中的interceptor节点信息 生成插件
+   */
   private void pluginElement(XNode parent) throws Exception {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {

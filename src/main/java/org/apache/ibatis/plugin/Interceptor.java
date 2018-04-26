@@ -17,15 +17,36 @@ package org.apache.ibatis.plugin;
 
 import java.util.Properties;
 
+/* sourceRead
+ * 插件约定接口
+ */
+
 /**
  * @author Clinton Begin
  */
 public interface Interceptor {
 
+  /**
+   * 它将直接覆盖拦截对象的原有方法
+   * @param invocation Invocation 不是InvocationHandler 通过它可以调用原来对象的方法
+   * @return Object
+   * @throws Throwable Throwable
+   */
   Object intercept(Invocation invocation) throws Throwable;
 
+  /**
+   * 它的作用是给拦截对象生成一个代理对象 并返回它
+   * 在Mybatis 中有Plugin.wrap方法生成代理对象
+   * @param target target是被拦截的对象
+   * @return 代理对象
+   */
   Object plugin(Object target);
 
+  /**
+   * 允许在配置插件的时候配置参数
+   * 此方法在插件初始化的时候会调用一次， 可以用它获取参数
+   * @param properties Prop
+   */
   void setProperties(Properties properties);
 
 }
